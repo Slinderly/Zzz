@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador de Archivos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        #uploadForm {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #folderList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .folder, .file {
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            width: 120px;
+            text-align: center;
+            background-color: #ffffff;
+            position: relative;
+        }
+        .folder {
+            background-color: #d1e7dd;
+        }
+        .file {
+            background-color: #cfe2ff;
+        }
+        .folder span, .file span {
+            display: block;
+            margin-top: 10px;
+        }
+        .delete {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            color: red;
+        }
+        audio, video {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Administrador de Archivos</h1>
+
+    <!-- Formulario para subir archivos -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="fileInput">Selecciona un archivo para subir:</label>
+        <input type="file" id="fileInput" name="file" accept="*/*" required>
+        <button type="submit">Subir Archivo</button>
+    </form>
+
+    <div id="folderList">
+        <!-- Aquí se añadirán las carpetas y archivos -->
+    </div>
+
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const folderList = document.getElementById('folderList');
+
+        // Función para crear una nueva carpeta
+        function createFolder(name) {
+            const folder = document.createElement('div');
+            folder.className = 'folder';
+            folder.innerHTML = `
+                <span class="delete" onclick="this.parentElement.remove()">🗑️</span>
+                📁 ${name}
+            `;
+            folderList.appendChild(folder);
+        }
+
+        uploadForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file';
+                fileItem.innerHTML = `
+                    <span class="delete" onclick="this.parentElement.remove()">🗑️</span>
+                    📄 ${file.name}
+                    <a href="${URL.createObjectURL(file)}" download>Descargar</a>
+                `;
+
+                // Verificar el tipo de archivo para reproducir
+                if (file.type.startsWith('audio/')) {
+                    const audio = document.createElement('audio');
+                    audio.controls = true;
+                    audio.src = URL.createObjectURL(file);
+                    fileItem.appendChild(audio);
+                } else if (file.type.startsWith('video/')) {
+                    const video = document.createElement('video');
+                    video.controls = true;
+                    video.src = URL.createObjectURL(file);
+                    fileItem.appendChild(video);
+                }
+
+                folderList.appendChild(fileItem);
+            }
+
+            // Limpiar el campo de entrada
+            fileInput.value = '';
+        });
+
+        // Crear carpetas de ejemplo
+        createFolder('Carpeta 1');
+        createFolder('Carpeta 2');
+    </script>
+</body>
+</html>
